@@ -124,10 +124,11 @@ class MainMenuFrame extends JFrame {
 // Pack Frame
 class PackFrame extends JFrame {
     private JTextField txtDir, txtDest;
+    private JPasswordField txtKey; // New field for the key
 
     public PackFrame() {
         setTitle("Marvellous Packer");
-        setSize(500, 300);
+        setSize(500, 350); // Increased height
         setLocationRelativeTo(null);
         setLayout(null);
 
@@ -147,13 +148,31 @@ class PackFrame extends JFrame {
         txtDest.setBounds(180, 120, 200, 25);
         add(txtDest);
 
+        // --- NEW KEY FIELD START ---
+        JLabel lblKey = new JLabel("Encryption Key:");
+        lblKey.setBounds(50, 160, 120, 25);
+        add(lblKey);
+
+        txtKey = new JPasswordField();
+        txtKey.setBounds(180, 160, 200, 25);
+        add(txtKey);
+        // --- NEW KEY FIELD END ---
+
         JButton btnPack = new JButton("Pack");
-        btnPack.setBounds(180, 170, 100, 30);
+        btnPack.setBounds(180, 210, 100, 30); // Moved position
         add(btnPack);
 
         btnPack.addActionListener(e -> {
+            String key = new String(txtKey.getPassword()); // Get the key
+            
+            if (key.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter an Encryption Key.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             try {
-                MarvellousPacker packer = new MarvellousPacker(txtDest.getText(), txtDir.getText());
+                // Pass the key to the packer constructor
+                MarvellousPacker packer = new MarvellousPacker(txtDest.getText(), txtDir.getText(), key);
                 packer.PackingActivity();
                 JOptionPane.showMessageDialog(this, "Packing Completed!");
             } catch (Exception ex) {
@@ -168,10 +187,11 @@ class PackFrame extends JFrame {
 // Unpack Frame
 class UnpackFrame extends JFrame {
     private JTextField txtFile;
+    private JPasswordField txtKey; // New field for the key
 
     public UnpackFrame() {
         setTitle("Marvellous Unpacker");
-        setSize(500, 250);
+        setSize(500, 300); // Increased height
         setLocationRelativeTo(null);
         setLayout(null);
 
@@ -182,14 +202,32 @@ class UnpackFrame extends JFrame {
         txtFile = new JTextField();
         txtFile.setBounds(180, 80, 200, 25);
         add(txtFile);
+        
+        // --- NEW KEY FIELD START ---
+        JLabel lblKey = new JLabel("Decryption Key:");
+        lblKey.setBounds(50, 120, 120, 25);
+        add(lblKey);
+
+        txtKey = new JPasswordField();
+        txtKey.setBounds(180, 120, 200, 25);
+        add(txtKey);
+        // --- NEW KEY FIELD END ---
 
         JButton btnUnpack = new JButton("Unpack");
-        btnUnpack.setBounds(180, 130, 100, 30);
+        btnUnpack.setBounds(180, 170, 100, 30); // Moved position
         add(btnUnpack);
 
         btnUnpack.addActionListener(e -> {
+            String key = new String(txtKey.getPassword()); // Get the key
+
+            if (key.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Decryption Key.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             try {
-                MarvellousUnpacker unpacker = new MarvellousUnpacker(txtFile.getText());
+                // Pass the key to the unpacker constructor
+                MarvellousUnpacker unpacker = new MarvellousUnpacker(txtFile.getText(), key);
                 unpacker.UnpackingActivity();
                 JOptionPane.showMessageDialog(this, "Unpacking Completed!");
             } catch (Exception ex) {

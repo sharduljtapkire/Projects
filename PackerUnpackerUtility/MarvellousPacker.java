@@ -7,11 +7,14 @@ public class MarvellousPacker
 {
     private String PackName;
     private String DirName;
+    private String EncryptKey; // New member variable for the key
 
-    public MarvellousPacker(String A , String B)
+    // Modified constructor to accept the encryption key
+    public MarvellousPacker(String A , String B, String C)
     {
         this.PackName = A;
         this.DirName = B;
+        this.EncryptKey = C; // Store the key
     }
 
     public void PackingActivity()
@@ -67,8 +70,14 @@ public class MarvellousPacker
                         Header = Header + " ";
                     }
 
-                    //write header into packed file
-                    foobj.write(Header.getBytes());
+                    // --- ENCRYPTION OF HEADER START ---
+                    byte[] HeaderBytes = Header.getBytes();
+                    MarvellousSecurity.xorCipherHeader(HeaderBytes, EncryptKey); // Pass the key
+                    
+                    //write encrypted header into packed file
+                    foobj.write(HeaderBytes);
+                    // --- ENCRYPTION OF HEADER END ---
+
 
                     //open file from directory for reading
                     FileInputStream fiobj = new FileInputStream(Arr[i]);
@@ -76,7 +85,13 @@ public class MarvellousPacker
                     //write contents of file into packed file 
                     while((iRet = fiobj.read(Buffer)) != -1)
                     {
+                        // --- ENCRYPTION OF FILE DATA START ---
+                        MarvellousSecurity.xorCipher(Buffer, iRet, EncryptKey); // Pass the key
+                        
+                        //write encrypted data into packed file 
                         foobj.write(Buffer,0,iRet); 
+                        // --- ENCRYPTION OF FILE DATA END ---
+                        
                         System.out.println("file name scanned : "+Arr[i].getName());
                         System.out.println("File Size Read Is : "+iRet);                       
                     }
@@ -103,4 +118,4 @@ public class MarvellousPacker
         catch(Exception eobj)
         {}
     } // end of packing activity function
-} // end of marvellouspacker class 
+} // end of marvellouspacker class

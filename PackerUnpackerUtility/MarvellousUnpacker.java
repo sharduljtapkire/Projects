@@ -6,10 +6,13 @@ import java.io.*;
 public class MarvellousUnpacker
 {
     private String PackName;
+    private String DecryptKey; // New member variable for the key
 
-    public MarvellousUnpacker(String A)
+    // Modified constructor to accept the decryption key
+    public MarvellousUnpacker(String A, String B)
     {
         this.PackName = A;
+        this.DecryptKey = B; // Store the key
     }
 
     public void UnpackingActivity()
@@ -40,6 +43,10 @@ public class MarvellousUnpacker
             // Scanned The Packed File To Extract The Files From It (Baher kadna)
             while((iRet = fiobj.read(HeaderBuffer,0,100)) != -1)
             {
+                // --- DECRYPTION OF HEADER START ---
+                MarvellousSecurity.xorCipherHeader(HeaderBuffer, DecryptKey); // Pass the key
+                // --- DECRYPTION OF HEADER END ---
+
                 // Convert Byte Array To String
                 Header = new String(HeaderBuffer);
 
@@ -62,6 +69,10 @@ public class MarvellousUnpacker
 
                 // Readd The data form Packed File
                 fiobj.read(Buffer,0,FileSize);
+
+                // --- DECRYPTION OF FILE DATA START ---
+                MarvellousSecurity.xorCipher(Buffer, FileSize, DecryptKey); // Pass the key
+                // --- DECRYPTION OF FILE DATA END ---
 
                 // Writes The Data Into Extracted File
                 foobj.write(Buffer,0,FileSize);
